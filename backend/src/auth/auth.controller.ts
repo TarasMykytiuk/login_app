@@ -1,5 +1,7 @@
 import { Controller, Post, Body, Res, Get, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import * as Express from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -10,9 +12,30 @@ export class AuthController {
         return this.authService.register(body);
     }
 
+    @Post('login')
+    async login(@Body() body: any, @Res({ passthrough: true }) res: Express.Response) {
+        const { token, user } = await this.authService.login(body);
+
+        res.cookie('session_token', token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            maxAge: 1000 * 60 * 60 * 2,
+        });
+
+        return user;
+    }
+
+    @Post('logout')
+    async logout(@Res({ passthrough: true }) res: Express.Response) {
+        res.clearCookie('session_token');
+        return { message: 'Logged out successfully' };
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get('me')
     async getProfile(@Req() req: any) {
-        return { message: 'something' };
+        return req.user;
     }
 }
 
