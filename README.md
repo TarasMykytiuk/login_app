@@ -29,3 +29,73 @@ npx prisma migrate dev sets up the schema
 Sign up → log in → dashboard → log out works in the browser
 The password stored in the database is a hash
 The dashboard API returns 401 to curl without the cookie
+
+# my steps
+# backend part
+npx @nestjs/cli new backend --strict --package-manager npm
+
+Inside backend directory:
+npm install cookie-parser @nestjs/jwt @nestjs/passport passport passport-jwt bcrypt
+npm install --save-dev @types/cookie-parser @types/passport-jwt @types/bcrypt
+
+Create .env file
+
+Create docker-compose.yml file
+
+Inside backend directory:
+docker compose up -d
+npx prisma init
+
+Modify prisma/schema.prisma file
+
+npx prisma migrate dev --name init
+
+Generate modules, services, and controllers cleanly using NestJS blueprints:
+
+npx @nestjs/cli generate module prisma
+npx @nestjs/cli generate service prisma
+
+npx @nestjs/cli generate module auth
+npx @nestjs/cli generate service auth
+npx @nestjs/cli generate controller auth
+
+Create files:
+
+src/auth/jwt.strategy.ts
+src/auth/jwt-auth.guard.ts
+
+After modification of this files start backend service:
+npm run start:dev &
+
+# frontend part
+npx create-vite frontend --template react-ts
+
+Inside frontend folder:
+
+npm install axios react-router-dom
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+
+modify tailwind.config.js
+
+modify src/index.css:
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+Inside frontend folder:
+
+mkdir -p src/components src/pages
+
+create files:
+src/components/ProtectedRoute.tsx
+src/pages/Login.tsx
+src/pages/Signup.tsx
+src/pages/Dashboard.tsx
+
+Modify src/App.tsx
+
+Modify vite.config.ts
+
+# Start your interface frontend engine context
+npm run dev
